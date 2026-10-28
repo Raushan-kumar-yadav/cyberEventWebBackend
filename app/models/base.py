@@ -1,7 +1,8 @@
 from datetime import UTC, datetime
 from typing import Any
 
-from sqlalchemy import DateTime, MetaData
+from sqlalchemy import JSON, DateTime, MetaData
+from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.engine import Dialect
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 from sqlalchemy.types import TypeDecorator
@@ -33,6 +34,9 @@ class UTCDateTime(TypeDecorator[datetime]):
         if value is not None and value.tzinfo is None:
             return value.replace(tzinfo=UTC)
         return value
+
+
+JSONType = JSON().with_variant(JSONB(), "postgresql")
 
 
 class Base(DeclarativeBase):
