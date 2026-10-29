@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.core.config import settings
+from app.core.middleware import OriginGuard
 
 
 def create_app() -> FastAPI:
@@ -15,6 +16,7 @@ def create_app() -> FastAPI:
     )
 
     if settings.frontend_origins:
+        app.add_middleware(OriginGuard, allowed=settings.frontend_origins)
         app.add_middleware(
             CORSMiddleware,
             allow_origins=settings.frontend_origins,
