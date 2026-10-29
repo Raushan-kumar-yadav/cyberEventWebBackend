@@ -66,6 +66,13 @@ def admin_view(game: GameState, now: datetime) -> AdminGameStateOut:
     )
 
 
+async def require_started(db: AsyncSession) -> GameState:
+    game = await get_game(db)
+    if game.status == GameStatus.NOT_STARTED:
+        raise _conflict("Game has not started")
+    return game
+
+
 async def require_running(db: AsyncSession) -> GameState:
     game = await get_game(db)
     if effective_status(game, utcnow()) != GameStatus.RUNNING:

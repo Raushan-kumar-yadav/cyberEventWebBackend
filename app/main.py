@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.core.config import settings
 from app.core.middleware import OriginGuard
-from app.routers import admin, game, store, team
+from app.routers import admin, game, paths, store, team
 
 
 def create_app() -> FastAPI:
@@ -33,6 +33,7 @@ def create_app() -> FastAPI:
     app.include_router(team.router, prefix=prefix)
     app.include_router(game.router, prefix=prefix)
     app.include_router(store.router, prefix=prefix)
+    app.include_router(paths.router, prefix=prefix)
     app.include_router(admin.router, prefix=prefix)
 
     return app

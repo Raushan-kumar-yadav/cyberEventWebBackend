@@ -8,6 +8,7 @@ from app.core.security import create_token, verify_password
 from app.deps import DB, CurrentTeam
 from app.models import Team
 from app.schemas.team import TeamLogin, TeamMe, TeamSession
+from app.services import progression
 
 router = APIRouter(prefix="/team", tags=["team"])
 
@@ -38,7 +39,7 @@ async def logout(team: CurrentTeam, response: Response, db: DB) -> None:
 
 @router.get("/me")
 async def me(team: CurrentTeam) -> TeamMe:
-    frozen = team.frozen_until if team.frozen_until and team.frozen_until > utcnow() else None
+    frozen = progression.frozen_until(team, utcnow())
     return TeamMe(
         team_id=team.id,
         team_name=team.name,
