@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.core.config import settings
 from app.core.middleware import OriginGuard
+from app.routers import team
 
 
 def create_app() -> FastAPI:
@@ -28,6 +29,8 @@ def create_app() -> FastAPI:
     @app.get(f"{prefix}/health", include_in_schema=False)
     async def health() -> dict[str, str]:
         return {"status": "ok"}
+
+    app.include_router(team.router, prefix=prefix)
 
     return app
 

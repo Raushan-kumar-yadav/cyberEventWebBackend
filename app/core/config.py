@@ -15,6 +15,7 @@ class Settings(BaseSettings):
     jwt_secret: str = Field(min_length=32)
     jwt_algorithm: str = "HS256"
     token_ttl_seconds: int = 4 * 60 * 60
+    login_attempts_per_minute: int = 10
 
     cookie_secure: bool = True
     frontend_origins: list[str] = []
