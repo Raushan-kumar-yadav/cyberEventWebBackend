@@ -19,7 +19,7 @@ NAMING_CONVENTION = {
 
 
 class UTCDateTime(TypeDecorator[datetime]):
-    # SQLite drops tzinfo 
+    
     impl = DateTime(timezone=True)
     cache_ok = True
 

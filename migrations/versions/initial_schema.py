@@ -1,4 +1,3 @@
- 
 
 from collections.abc import Sequence
 
@@ -15,6 +14,7 @@ JSON_TYPE = sa.JSON().with_variant(postgresql.JSONB(astext_type=sa.Text()), "pos
 
 
 def upgrade() -> None:
+    # Organizer accounts.
     op.create_table(
         "admins",
         sa.Column("id", sa.Integer(), nullable=False),
@@ -25,6 +25,7 @@ def upgrade() -> None:
         sa.PrimaryKeyConstraint("id", name=op.f("pk_admins")),
         sa.UniqueConstraint("name", name=op.f("uq_admins_name")),
     )
+    # server game timer 
     game_state = op.create_table(
         "game_state",
         sa.Column("id", sa.Integer(), nullable=False),
@@ -52,6 +53,7 @@ def upgrade() -> None:
     op.bulk_insert(
         game_state, [{"id": 1, "status": "not_started", "paused_seconds": 0, "version": 0}]
     )
+    # Routes to Delhi
     op.create_table(
         "paths",
         sa.Column("id", sa.Integer(), nullable=False),
@@ -61,6 +63,7 @@ def upgrade() -> None:
         sa.PrimaryKeyConstraint("id", name=op.f("pk_paths")),
         sa.UniqueConstraint("name", name=op.f("uq_paths_name")),
     )
+    # Current store prices
     op.create_table(
         "store_prices",
         sa.Column("key", sa.String(length=32), nullable=False),
@@ -68,6 +71,7 @@ def upgrade() -> None:
         sa.Column("updated_at", sa.DateTime(timezone=True), nullable=False),
         sa.PrimaryKeyConstraint("key", name=op.f("pk_store_prices")),
     )
+    # Admin action  
     op.create_table(
         "admin_audit",
         sa.Column("id", sa.Integer(), nullable=False),
@@ -84,6 +88,7 @@ def upgrade() -> None:
         ),
         sa.PrimaryKeyConstraint("id", name=op.f("pk_admin_audit")),
     )
+    # final results
     op.create_table(
         "final_leaderboards",
         sa.Column("id", sa.Integer(), nullable=False),
@@ -98,6 +103,7 @@ def upgrade() -> None:
         ),
         sa.PrimaryKeyConstraint("id", name=op.f("pk_final_leaderboards")),
     )
+    #  store price change history 
     op.create_table(
         "price_changes",
         sa.Column("id", sa.Integer(), nullable=False),
@@ -114,6 +120,7 @@ def upgrade() -> None:
         ),
         sa.PrimaryKeyConstraint("id", name=op.f("pk_price_changes")),
     )
+    # Team logins and and updates
     op.create_table(
         "teams",
         sa.Column("id", sa.Integer(), nullable=False),
@@ -146,6 +153,7 @@ def upgrade() -> None:
         sa.PrimaryKeyConstraint("id", name=op.f("pk_teams")),
         sa.UniqueConstraint("username", name=op.f("uq_teams_username")),
     )
+    # Monument challenges.
     op.create_table(
         "questions",
         sa.Column("id", sa.Uuid(), nullable=False),
@@ -195,6 +203,7 @@ def upgrade() -> None:
         sa.PrimaryKeyConstraint("id", name=op.f("pk_questions")),
         sa.UniqueConstraint("code", name=op.f("uq_questions_code")),
     )
+    # Question order on each path.
     op.create_table(
         "path_questions",
         sa.Column("path_id", sa.Integer(), nullable=False),
@@ -215,6 +224,7 @@ def upgrade() -> None:
         sa.PrimaryKeyConstraint("path_id", "position", name=op.f("pk_path_questions")),
         sa.UniqueConstraint("path_id", "question_id", name=op.f("uq_path_questions_path_id")),
     )
+    # Every point change.
     op.create_table(
         "point_ledger",
         sa.Column("id", sa.Integer(), nullable=False),
@@ -261,6 +271,7 @@ def upgrade() -> None:
         sa.PrimaryKeyConstraint("id", name=op.f("pk_point_ledger")),
     )
     op.create_index(op.f("ix_point_ledger_team_id"), "point_ledger", ["team_id"])
+    # Team question events  logs
     op.create_table(
         "team_logs",
         sa.Column("id", sa.Integer(), nullable=False),
@@ -301,6 +312,7 @@ def upgrade() -> None:
         sa.PrimaryKeyConstraint("id", name=op.f("pk_team_logs")),
     )
     op.create_index("ix_team_logs_team_created", "team_logs", ["team_id", "created_at"])
+    # Team route events maps
     op.create_table(
         "team_path_events",
         sa.Column("id", sa.Integer(), nullable=False),
@@ -345,6 +357,7 @@ def upgrade() -> None:
         sa.PrimaryKeyConstraint("id", name=op.f("pk_team_path_events")),
     )
     op.create_index(op.f("ix_team_path_events_team_id"), "team_path_events", ["team_id"])
+    # Per-team progress on ques
     op.create_table(
         "team_question_states",
         sa.Column("team_id", sa.Integer(), nullable=False),

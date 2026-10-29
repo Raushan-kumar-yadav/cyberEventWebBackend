@@ -4,6 +4,7 @@ from sqlalchemy.orm import Mapped, mapped_column
 from app.models.base import Base, TimestampMixin
 
 
+# admin
 class Admin(TimestampMixin, Base):
     __tablename__ = "admins"
 

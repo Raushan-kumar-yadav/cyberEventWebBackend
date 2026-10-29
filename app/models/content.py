@@ -7,6 +7,7 @@ from sqlalchemy.orm import Mapped, mapped_column
 from app.models.base import Base, TimestampMixin
 
 
+# One of the routes to Delhi 
 class Path(Base):
     __tablename__ = "paths"
 
@@ -16,6 +17,7 @@ class Path(Base):
     sort_order: Mapped[int] = mapped_column(default=0)
 
 
+# Monument challenge: content, flag, scoring and shared unlock/block state
 class Question(TimestampMixin, Base):
     __tablename__ = "questions"
 
@@ -54,6 +56,7 @@ class Question(TimestampMixin, Base):
     )
 
 
+# Question order on a path 
 class PathQuestion(Base):
     __tablename__ = "path_questions"
     __table_args__ = (UniqueConstraint("path_id", "question_id"),)

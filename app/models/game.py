@@ -9,14 +9,13 @@ from app.models.base import Base, JSONType, TimestampMixin
 from app.models.enums import GameStatus, str_enum
 
 
+# server game timer 
 class GameState(Base):
     __tablename__ = "game_state"
     __table_args__ = (CheckConstraint("id = 1", name="singleton"),)
 
     id: Mapped[int] = mapped_column(primary_key=True, default=1)
-    status: Mapped[GameStatus] = mapped_column(
-        str_enum(GameStatus), default=GameStatus.NOT_STARTED
-    )
+    status: Mapped[GameStatus] = mapped_column(str_enum(GameStatus), default=GameStatus.NOT_STARTED)
     start_at: Mapped[datetime | None]
     end_at: Mapped[datetime | None]
     paused_at: Mapped[datetime | None]
@@ -24,6 +23,7 @@ class GameState(Base):
     version: Mapped[int] = mapped_column(default=0)
 
 
+# current price of store items
 class StorePrice(Base):
     __tablename__ = "store_prices"
 
@@ -32,6 +32,7 @@ class StorePrice(Base):
     updated_at: Mapped[datetime] = mapped_column(default=utcnow, onupdate=utcnow)
 
 
+# history of store pice changes 
 class PriceChange(TimestampMixin, Base):
     __tablename__ = "price_changes"
 
@@ -42,6 +43,7 @@ class PriceChange(TimestampMixin, Base):
     admin_id: Mapped[int | None] = mapped_column(ForeignKey("admins.id", ondelete="SET NULL"))
 
 
+# final result 
 class FinalLeaderboard(TimestampMixin, Base):
     __tablename__ = "final_leaderboards"
 

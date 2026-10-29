@@ -7,6 +7,7 @@ from app.models.base import Base, TimestampMixin
 from app.models.enums import LedgerReason, str_enum
 
 
+# Every point changev
 class PointLedger(TimestampMixin, Base):
     __tablename__ = "point_ledger"
 

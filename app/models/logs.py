@@ -10,6 +10,7 @@ from app.models.base import Base, JSONType, TimestampMixin
 from app.models.enums import PathEvent, QuestionEvent, str_enum
 
 
+# Team question events  
 class TeamLog(TimestampMixin, Base):
     __tablename__ = "team_logs"
     __table_args__ = (Index("ix_team_logs_team_created", "team_id", "created_at"),)
@@ -23,6 +24,7 @@ class TeamLog(TimestampMixin, Base):
     meta: Mapped[dict[str, Any]] = mapped_column(JSONType, default=dict)
 
 
+# Team route events  
 class TeamPathEvent(TimestampMixin, Base):
     __tablename__ = "team_path_events"
 
@@ -36,6 +38,7 @@ class TeamPathEvent(TimestampMixin, Base):
     at: Mapped[datetime] = mapped_column(default=utcnow)
 
 
+# Admin action audit trail
 class AdminAudit(TimestampMixin, Base):
     __tablename__ = "admin_audit"
 

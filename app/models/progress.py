@@ -8,6 +8,7 @@ from app.models.base import Base
 from app.models.enums import QuestionStatus, str_enum
 
 
+# team progress on question
 class TeamQuestionState(Base):
     __tablename__ = "team_question_states"
 

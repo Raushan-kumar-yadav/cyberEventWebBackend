@@ -6,6 +6,7 @@ from sqlalchemy.orm import Mapped, mapped_column
 from app.models.base import Base, TimestampMixin
 
 
+# Team login  
 class Team(TimestampMixin, Base):
     __tablename__ = "teams"
     __table_args__ = (CheckConstraint("points >= 0", name="points_non_negative"),)
@@ -22,9 +23,7 @@ class Team(TimestampMixin, Base):
     has_reached_delhi: Mapped[bool] = mapped_column(default=False)
     reached_delhi_at: Mapped[datetime | None]
 
-    current_path_id: Mapped[int | None] = mapped_column(
-        ForeignKey("paths.id", ondelete="SET NULL")
-    )
+    current_path_id: Mapped[int | None] = mapped_column(ForeignKey("paths.id", ondelete="SET NULL"))
     switch_from_path_id: Mapped[int | None] = mapped_column(
         ForeignKey("paths.id", ondelete="SET NULL")
     )
