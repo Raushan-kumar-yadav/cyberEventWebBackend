@@ -89,6 +89,7 @@ class QuestionSummary(BaseModel):
     title: str
     monument: str
     base_points: int
+    current_points: int
     enabled: bool
     is_final: bool
     path_ids: list[int]
@@ -124,6 +125,9 @@ class QuestionAdminOut(BaseModel):
     blocked_by_team_id: int | None
     created_at: LocalDatetime
     path_ids: list[int] = []
+    current_points: int = 0
+    seconds_since_unlock: int | None = None
+    next_drop_in_seconds: int | None = None
 
 
 # path create / import row

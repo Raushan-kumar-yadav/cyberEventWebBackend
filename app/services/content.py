@@ -6,6 +6,7 @@ from fastapi import HTTPException, status
 from sqlalchemy import delete, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.core.clock import utcnow
 from app.models import Path, PathQuestion, Question
 from app.schemas.content import (
     ContentImport,
@@ -17,6 +18,7 @@ from app.schemas.content import (
     QuestionCreate,
     QuestionSummary,
 )
+from app.services import game_clock, scoring
 
 NULLABLE_QUESTION_FIELDS = {"hint1", "hint2", "file_path"}
 
@@ -160,13 +162,27 @@ async def import_content(db: AsyncSession, data: ContentImport) -> ImportResult:
     return result
 
 
+async def _active_now(db: AsyncSession) -> int:
+    return game_clock.active_seconds(await game_clock.get_game(db), utcnow())
+
+
 async def question_out(db: AsyncSession, question: Question) -> QuestionAdminOut:
     path_ids = (await path_ids_by_question(db, [question.id])).get(question.id, [])
-    return QuestionAdminOut.model_validate(question).model_copy(update={"path_ids": path_ids})
+    active = await _active_now(db)
+    unlocked = question.unlocked_game_seconds
+    return QuestionAdminOut.model_validate(question).model_copy(
+        update={
+            "path_ids": path_ids,
+            "current_points": scoring.current_points(question, active),
+            "seconds_since_unlock": None if unlocked is None else max(0, active - unlocked),
+            "next_drop_in_seconds": scoring.next_drop_in(question, active),
+        }
+    )
 
 
 async def question_summaries(db: AsyncSession) -> list[QuestionSummary]:
     path_ids = await path_ids_by_question(db)
+    active = await _active_now(db)
     return [
         QuestionSummary(
             question_id=q.id,
@@ -174,6 +190,7 @@ async def question_summaries(db: AsyncSession) -> list[QuestionSummary]:
             title=q.title,
             monument=q.monument,
             base_points=q.base_points,
+            current_points=scoring.current_points(q, active),
             enabled=q.enabled,
             is_final=q.is_final,
             path_ids=path_ids.get(q.id, []),
