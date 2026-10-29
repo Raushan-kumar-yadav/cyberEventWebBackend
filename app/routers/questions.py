@@ -9,9 +9,10 @@ from app.core.clock import utcnow
 from app.core.config import settings
 from app.deps import DB, CurrentTeam
 from app.models.enums import GameStatus
+from app.schemas.actions import HintIn, HintOut, RetryOut, SkipOut, WaitIn, WaitOut
 from app.schemas.question import QuestionOut
 from app.schemas.submission import SubmitIn, SubmitOut
-from app.services import game_clock, questions, submissions
+from app.services import game_clock, question_actions, questions, submissions
 
 router = APIRouter(prefix="/question", tags=["questions"])
 
@@ -54,3 +55,28 @@ async def submit_flag(
     question_id: uuid.UUID, body: SubmitIn, team: CurrentTeam, db: DB
 ) -> SubmitOut:
     return await submissions.submit(db, team, question_id, body)
+
+
+@router.post("/hint/{question_id}")
+async def buy_hint(question_id: uuid.UUID, body: HintIn, team: CurrentTeam, db: DB) -> HintOut:
+    return await question_actions.buy_hint(db, team, question_id, body.hint)
+
+
+@router.post("/retry/{question_id}")
+async def buy_retry(question_id: uuid.UUID, team: CurrentTeam, db: DB) -> RetryOut:
+    return await question_actions.buy_retry(db, team, question_id)
+
+
+@router.post("/skip/{question_id}")
+async def skip(question_id: uuid.UUID, team: CurrentTeam, db: DB) -> SkipOut:
+    return await question_actions.skip(db, team, question_id)
+
+
+@router.post("/wait/{question_id}")
+async def wait(question_id: uuid.UUID, body: WaitIn, team: CurrentTeam, db: DB) -> WaitOut:
+    return await question_actions.set_wait(db, team, question_id, body.wait)
+
+
+@router.post("/cancel/{question_id}")
+async def cancel_wait(question_id: uuid.UUID, team: CurrentTeam, db: DB) -> WaitOut:
+    return await question_actions.cancel_wait(db, team, question_id)

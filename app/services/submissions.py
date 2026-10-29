@@ -72,9 +72,7 @@ async def submit(db: AsyncSession, team: Team, question_id: uuid.UUID, body: Sub
         return SubmitOut(result="out_of_retries", points=team.points, retries_left=0)
 
     # first answer locks the route
-    if team.current_path_id is None:
-        team.current_path_id = path_id
-        logs.log_path(db, team.id, path_id, PathEvent.START, at=now)
+    progression.lock_route(db, team, path_id, now)
 
     if not flag_matches(question, body.flag):
         state.attempts_used += 1
@@ -128,12 +126,7 @@ async def _solve(
         team.has_reached_delhi = True
         team.reached_delhi_at = now
 
-    next_id = await progression.current_question_id(db, team, path_id)
-    if next_id is None:
-        logs.log_path(db, team.id, path_id, PathEvent.END, at=now)
-        team.playthroughs += 1
-        team.current_path_id = None
-
+    next_id = await progression.advance(db, team, path_id, now)
     await db.commit()
     return SubmitOut(
         result="correct",

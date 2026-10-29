@@ -6,7 +6,8 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models import Path, PathQuestion, Question, Team, TeamQuestionState
-from app.models.enums import QuestionStatus
+from app.models.enums import PathEvent, QuestionStatus
+from app.services import logs
 
 DONE = (QuestionStatus.SOLVED, QuestionStatus.SKIPPED)
 
@@ -51,7 +52,7 @@ async def current_question_id(db: AsyncSession, team: Team, path_id: int) -> uui
 
 
 async def reachable_path(db: AsyncSession, team: Team, question_id: uuid.UUID) -> int | None:
-    # locked teams only reach their path 
+    # locked teams only reach their path
     done = await done_question_ids(db, team.id)
     by_path = await enabled_questions_by_path(db, team.current_path_id)
     paths = [team.current_path_id] if team.current_path_id else await all_path_ids(db)
@@ -63,3 +64,18 @@ async def reachable_path(db: AsyncSession, team: Team, question_id: uuid.UUID) -
 
 async def all_path_ids(db: AsyncSession) -> list[int]:
     return list(await db.scalars(select(Path.id).order_by(Path.sort_order, Path.id)))
+
+
+def lock_route(db: AsyncSession, team: Team, path_id: int, now: datetime) -> None:
+    if team.current_path_id is None:
+        team.current_path_id = path_id
+        logs.log_path(db, team.id, path_id, PathEvent.START, at=now)
+
+
+async def advance(db: AsyncSession, team: Team, path_id: int, now: datetime) -> uuid.UUID | None:
+    next_id = await current_question_id(db, team, path_id)
+    if next_id is None:
+        logs.log_path(db, team.id, path_id, PathEvent.END, at=now)
+        team.playthroughs += 1
+        team.current_path_id = None
+    return next_id
