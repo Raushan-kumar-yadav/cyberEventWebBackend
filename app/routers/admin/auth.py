@@ -24,7 +24,7 @@ async def login(body: AdminLogin, request: Request, response: Response, db: DB) 
         await db.commit()
         raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Invalid name or passcode")
 
-    # multi screen 
+    # multi screen
     audit.record(db, admin.id, "login", ip=client)
     await db.commit()
     set_auth_cookie(response, "admin", create_token("admin", admin.id, admin.session_version))
