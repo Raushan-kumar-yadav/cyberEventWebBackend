@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.core.config import settings
 from app.core.middleware import OriginGuard
-from app.routers import team
+from app.routers import admin, team
 
 
 def create_app() -> FastAPI:
@@ -31,6 +31,7 @@ def create_app() -> FastAPI:
         return {"status": "ok"}
 
     app.include_router(team.router, prefix=prefix)
+    app.include_router(admin.router, prefix=prefix)
 
     return app
 
