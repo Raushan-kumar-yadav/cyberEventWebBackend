@@ -169,12 +169,11 @@ async def _active_now(db: AsyncSession) -> int:
 async def question_out(db: AsyncSession, question: Question) -> QuestionAdminOut:
     path_ids = (await path_ids_by_question(db, [question.id])).get(question.id, [])
     active = await _active_now(db)
-    unlocked = question.unlocked_game_seconds
     return QuestionAdminOut.model_validate(question).model_copy(
         update={
             "path_ids": path_ids,
             "current_points": scoring.current_points(question, active),
-            "seconds_since_unlock": None if unlocked is None else max(0, active - unlocked),
+            "seconds_since_unlock": scoring.seconds_since_unlock(question, active),
             "next_drop_in_seconds": scoring.next_drop_in(question, active),
         }
     )

@@ -1,7 +1,7 @@
 from app.models import Question
 
 
-# step decay from first unlock 
+# step decay from first unlock
 def current_points(question: Question, active_now: int) -> int:
     if question.unlocked_game_seconds is None or question.decay_interval_seconds <= 0:
         return question.base_points
@@ -20,3 +20,9 @@ def next_drop_in(question: Question, active_now: int) -> int | None:
         return None
     elapsed = max(0, active_now - question.unlocked_game_seconds)
     return question.decay_interval_seconds - elapsed % question.decay_interval_seconds
+
+
+def seconds_since_unlock(question: Question, active_now: int) -> int | None:
+    if question.unlocked_game_seconds is None:
+        return None
+    return max(0, active_now - question.unlocked_game_seconds)

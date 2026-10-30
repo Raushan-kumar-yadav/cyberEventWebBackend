@@ -5,8 +5,15 @@ from app.core.clock import utcnow
 from app.deps import DB, CurrentTeam
 from app.models import Path
 from app.models.enums import GameStatus
-from app.schemas.path import CurrentPathOut, PathOut, PathQuestionOut
-from app.services import content, game_clock, progression
+from app.schemas.path import (
+    CurrentPathOut,
+    PathCancelOut,
+    PathChangeIn,
+    PathChangeOut,
+    PathOut,
+    PathQuestionOut,
+)
+from app.services import content, game_clock, progression, travel
 
 router = APIRouter(tags=["paths"])
 
@@ -56,3 +63,15 @@ async def path_current_question(path_id: int, team: CurrentTeam, db: DB) -> Path
         raise HTTPException(status.HTTP_403_FORBIDDEN, "Team is on another path")
     question_id = await progression.current_question_id(db, team, path_id)
     return PathQuestionOut(path_id=path_id, question_id=question_id, completed=question_id is None)
+
+
+@router.post("/path/change/{path_id}")
+async def change_path(
+    path_id: int, team: CurrentTeam, db: DB, body: PathChangeIn | None = None
+) -> PathChangeOut:
+    return await travel.change_path(db, team, path_id, (body or PathChangeIn()).mode)
+
+
+@router.post("/path/cancel/{path_id}")
+async def cancel_switch(path_id: int, team: CurrentTeam, db: DB) -> PathCancelOut:
+    return await travel.cancel_switch(db, team, path_id)

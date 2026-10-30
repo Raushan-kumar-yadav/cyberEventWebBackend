@@ -1,4 +1,5 @@
 import uuid
+from typing import Literal
 
 from pydantic import BaseModel
 
@@ -28,3 +29,25 @@ class PathQuestionOut(BaseModel):
     path_id: int
     question_id: uuid.UUID | None
     completed: bool
+
+
+# path switch request
+class PathChangeIn(BaseModel):
+    mode: Literal["pay", "wait"] = "pay"
+
+
+# path switch result
+class PathChangeOut(BaseModel):
+    ok: bool = True
+    path_id: int
+    mode: Literal["free", "pay", "wait"]
+    charged: int
+    points: int
+    starts_at: LocalDatetime
+    frozen_until: LocalDatetime | None
+
+
+# switch cancel result
+class PathCancelOut(BaseModel):
+    ok: bool = True
+    path_id: int
