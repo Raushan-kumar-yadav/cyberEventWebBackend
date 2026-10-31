@@ -14,3 +14,7 @@ files/
 
 .idea/
 .vscode/
+.tests/
+.test/
+
+tests/

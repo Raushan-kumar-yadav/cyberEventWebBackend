@@ -1,0 +1,57 @@
+{
+  "admins": [
+    { "name": "organizer", "passcode": "change-me-admin" }
+  ],
+  "teams": [
+    { "username": "team-1", "name": "Team One", "password": "change-me-1" },
+    { "username": "team-2", "name": "Team Two", "password": "change-me-2" }
+  ],
+  "questions": [
+    {
+      "code": "gujarat-1",
+      "title": "Sample Challenge One",
+      "story": "Placeholder story for the first monument.",
+      "monument": "Rani ki Vav",
+      "hint1": "Placeholder hint one",
+      "hint2": "Placeholder hint two",
+      "flag": "CTF{sample_one}",
+      "base_points": 100,
+      "min_points": 40,
+      "decay_interval_seconds": 300,
+      "decay_points": 5,
+      "retries": 3,
+      "block_seconds": 300
+    },
+    {
+      "code": "tamil-1",
+      "title": "Sample Challenge Two",
+      "story": "Placeholder story for the second monument.",
+      "monument": "Brihadisvara Temple",
+      "flag": "CTF{sample_two}",
+      "base_points": 100
+    },
+    {
+      "code": "delhi-final",
+      "title": "Sample Final",
+      "story": "Placeholder story for the Red Fort.",
+      "monument": "Red Fort",
+      "flag": "CTF{sample_final}",
+      "base_points": 200,
+      "is_final": true
+    }
+  ],
+  "paths": [
+    {
+      "name": "Route 1",
+      "start_region": "Gujarat",
+      "sort_order": 1,
+      "question_codes": ["gujarat-1", "delhi-final"]
+    },
+    {
+      "name": "Route 2",
+      "start_region": "Tamil Nadu",
+      "sort_order": 2,
+      "question_codes": ["tamil-1", "delhi-final"]
+    }
+  ]
+}

@@ -47,6 +47,6 @@ def adjust_points(db: AsyncSession, team: Team, delta: int, reason: str, admin_i
 def unfreeze(team: Team) -> None:
     if progression.frozen_until(team, utcnow()) is None:
         raise HTTPException(status.HTTP_409_CONFLICT, "Team is not frozen")
-    # switch completes early, team stays on the new path
+    # switch completes early 
     team.frozen_until = None
     team.switch_from_path_id = None
